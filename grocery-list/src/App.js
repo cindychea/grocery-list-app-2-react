@@ -14,16 +14,19 @@ const App = () => {
     { name: 'Bakery', value: 'bakery' },
   ];
 
-  const initialItems = [
+  const initialItems = {
+    items: [
     { name: 'Steak', type: 'meat', quantity: 3 },
     { name: 'Apples', type: 'prod', quantity: 4 },
     { name: 'Milk (1L, 2%)', type: 'dairy', quantity: 1 },
     { name: 'Baguettes', type: 'bakery', quantity: 2 },
-  ];
-  const [items, setItems] = useState(initialItems);
+  ],
+  filter: 'all',
+}
+  const [state, setItems] = useState(initialItems);
 
   const incrementItemQuantity = (index) => {
-    const updatedItems = items.map((item, i) => {
+    const updatedItems = state.items.map((item, i) => {
       if (i === index) {
         item.quantity++;
       }
@@ -35,7 +38,7 @@ const App = () => {
   };
 
   const decrementItemQuantity = (index) => {
-    const updatedItems = items.map((item, i) => {
+    const updatedItems = state.items.map((item, i) => {
       if (i === index && item.quantity > 0) {
         item.quantity--;
       }
@@ -48,9 +51,14 @@ const App = () => {
 
   const addItem = (newItem) => {
     console.log({newItem})
-    setItems( (oldItems) => [...oldItems, newItem])
-    items.push(newItem);
+    setItems({ ...state, items: [...state.items, newItem]})
+    // stateitems.push(newItem);
   };
+
+  const filterItems = (selectedFilter) => {
+    console.log('setting selected filter', selectedFilter)
+    setItems({...state, filter: selectedFilter});
+  }
 
   return (
     <main className="layout" id="app">
@@ -58,9 +66,9 @@ const App = () => {
         <h1>Grocery List</h1>
       </header>
       <Form onSubmit={addItem}/>
-      <Filters filters={filters}/>
+      <Filters filters={filters} onSelection={filterItems} />
       <List
-        items={items}
+        items={state.items.filter((item) => state.filter === 'all' || item.type === state.filter)}
         incrementItem={incrementItemQuantity}
         decrementItem={decrementItemQuantity}
       />
